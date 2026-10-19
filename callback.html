@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <meta name="referrer" content="no-referrer">
+  <title>Finish connecting to QuickBooks – Andromeda Books Agent</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .url-box {
+      width: 100%;
+      min-height: 7em;
+      padding: 10px;
+      margin: 0 0 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      color: #222;
+      background: #fff;
+      border: 1px solid #bbb;
+      border-radius: 4px;
+      resize: vertical;
+      word-break: break-all;
+    }
+    .copy-btn {
+      font: inherit;
+      padding: 8px 18px;
+      color: #fff;
+      background: #2a5db0;
+      border: 0;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .copy-btn:hover { background: #234d93; }
+    .status { margin-left: 12px; color: #555; }
+    .error {
+      padding: 12px 14px;
+      background: #fff3f3;
+      border: 1px solid #e0b4b4;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="brand" href="index.html">Andromeda Books Agent</a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="eula.html">EULA</a>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="disconnect.html">Disconnect</a>
+    </nav>
+  </header>
+  <main>
+    <h1>Finish connecting to QuickBooks</h1>
+    <div id="ok">
+      <p>Copy the address below and paste it into the terminal where the connect step is waiting. It expires in a few minutes and works only once.</p>
+      <textarea id="url" class="url-box" readonly spellcheck="false" aria-label="Callback address"></textarea>
+      <p><button id="copy" class="copy-btn" type="button">Copy</button><span id="status" class="status" aria-live="polite"></span></p>
+    </div>
+    <div id="err" class="error" hidden>
+      <p><strong>QuickBooks did not complete the connection.</strong></p>
+      <p>Error: <code id="errtext"></code></p>
+      <p>Return to the terminal and run the connect step again.</p>
+    </div>
+    <noscript><p>JavaScript is off. Copy the full address from your browser's address bar and paste it into the terminal.</p></noscript>
+    <script>
+      (function () {
+        // This script only reads the current address and places it in the box.
+        // It never sends the address anywhere and stores nothing.
+        var params = new URLSearchParams(window.location.search);
+        var err = params.get("error");
+        if (err) {
+          document.getElementById("ok").hidden = true;
+          document.getElementById("errtext").textContent = err;
+          document.getElementById("err").hidden = false;
+          return;
+        }
+        var box = document.getElementById("url");
+        var status = document.getElementById("status");
+        box.value = window.location.href;
+
+        function note(msg) {
+          status.textContent = msg;
+          setTimeout(function () { status.textContent = ""; }, 3000);
+        }
+        function fallbackCopy() {
+          box.focus();
+          box.select();
+          try {
+            var done = document.execCommand("copy");
+            note(done ? "Copied." : "Select the text and copy it manually.");
+          } catch (e) {
+            note("Select the text and copy it manually.");
+          }
+        }
+        document.getElementById("copy").addEventListener("click", function () {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(box.value).then(function () { note("Copied."); }, fallbackCopy);
+          } else {
+            fallbackCopy();
+          }
+        });
+        box.addEventListener("focus", function () { box.select(); });
+      })();
+    </script>
+  </main>
+  <footer>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="eula.html">EULA</a>
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="disconnect.html">Disconnect</a>
+    </nav>
+    <p>&copy; 2026 Andromeda Tech, LLC</p>
+  </footer>
+</body>
+</html>
